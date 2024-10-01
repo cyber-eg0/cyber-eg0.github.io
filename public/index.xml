@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Curiouser and Curiouser!</title>
+    <link>//localhost:1313/</link>
+    <description>Recent content on Curiouser and Curiouser!</description>
+    <generator>Hugo -- 0.135.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 30 Sep 2024 23:47:39 -0500</lastBuildDate>
+    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ESXHiDE - ESXi Rootkit Development - Part 3</title>
+      <link>//localhost:1313/posts/esxi-rootkit-3/</link>
+      <pubDate>Mon, 30 Sep 2024 23:47:39 -0500</pubDate>
+      <guid>//localhost:1313/posts/esxi-rootkit-3/</guid>
+      <description>&lt;h2 id=&#34;looping-through-syscall-table&#34;&gt;Looping Through Syscall Table&lt;/h2&gt;
+&lt;p&gt;Once I was able to grab the base address of the &lt;code&gt;user&lt;/code&gt; module, I was able to use an offset to find &lt;code&gt;Linux64_SyscallTable&lt;/code&gt; and &lt;code&gt;Linux64_SyscallTableLen&lt;/code&gt; variables and loop through them to print out the syscalls for some sanity check.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;        uint64_t Linux64_SyscallTableLen = *(uint64_t*)(user_mod_addr + 0x935C0);
+        SyscallTable_Entry* Linux64_SyscallTable = (SyscallTable_Entry*)(user_mod_addr + 0x935E0);
+
+        for (i = 0; i &amp;lt; Linux64_SyscallTableLen; i++)
+        {
+            printk(&amp;#34;SYSCALL TABLE ENTRY %d: %s -&amp;gt; %p\n&amp;#34;, i, Linux64_SyscallTable[i].name, Linux64_SyscallTable[i].func);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;//localhost:1313/images/2024-09-30-23-51-48.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ESXHiDE - ESXi Rootkit Development - Part 2</title>
+      <link>//localhost:1313/posts/esxi-rootkit-2/</link>
+      <pubDate>Sun, 29 Sep 2024 13:16:49 -0500</pubDate>
+      <guid>//localhost:1313/posts/esxi-rootkit-2/</guid>
+      <description>&lt;h2 id=&#34;extracting-vmkernel--modules&#34;&gt;Extracting VMkernel &amp;amp; Modules&lt;/h2&gt;
+&lt;p&gt;In a &lt;a href=&#34;https://www.zerodayinitiative.com/blog/2023/6/21/cve-2022-31696-an-analysis-of-a-vmware-esxi-tcp-socket-keepalive-type-confusion-lpe&#34;&gt;post&lt;/a&gt; on ZDI, &lt;a href=&#34;https://x.com/renorobertr&#34;&gt;renorobertr&lt;/a&gt; shows how to locate and extract the VMkernel (and other modules like &lt;code&gt;user&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;//localhost:1313/images/2024-09-30-23-02-56.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;VMkernel can be found by extracting &lt;code&gt;/bootbank/k.b00&lt;/code&gt; and user* module can be extracted from &lt;code&gt;/bootbank/user.b00&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;*More on what&amp;rsquo;s in user module later&lt;/p&gt;
+&lt;p&gt;He also demonstrates using a native binary (&lt;code&gt;esxcfg-info -y&lt;/code&gt;) to get a module&amp;rsquo;s key memory addresses, which came in handy for reversing the module list and module structures.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ESXHiDE - ESXi Rootkit Development - Part 1</title>
+      <link>//localhost:1313/posts/esxi-rootkit-1/</link>
+      <pubDate>Sun, 29 Sep 2024 10:19:57 -0500</pubDate>
+      <guid>//localhost:1313/posts/esxi-rootkit-1/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;For some time now, I&amp;rsquo;ve been told that ESXi VMkernel is &lt;strong&gt;NOT&lt;/strong&gt; Linux.  After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant.  I won&amp;rsquo;t be going into all of the differences in this series but for those who are curious, &lt;a href=&#34;https://microage.com/wp-content/uploads/2016/02/ESXi_architecture.pdf&#34;&gt;this whitepaper on ESXi architecture&lt;/a&gt; is a good starting point.  My mind started to drift away from user mode tools to kernel mode security tools.  The only real resources I was able to find online were those related to things like USB and NIC drivers.  VMkernel is able to run some Linux kernel modules, but not all.  This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

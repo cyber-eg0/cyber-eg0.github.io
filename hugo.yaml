@@ -1,0 +1,19 @@
+baseURL: https://cyber-eg0.github.io.git
+languageCode: en-us
+title: Curiouser and Curiouser!
+theme: PaperMod
+pageinate: 10
+
+
+buildDrafts: true
+
+menu:
+  main:
+    - identifier: categories
+      name: categories
+      url: /categories/
+      weight: 10
+    - identifier: tags
+      name: tags
+      url: /tags/
+      weight: 20

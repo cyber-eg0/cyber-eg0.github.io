@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>ESXHiDE - ESXi Rootkit Development - Part 2 | Curiouser and Curiouser!</title>
+<meta name="keywords" content="">
+<meta name="description" content="Extracting VMkernel &amp; Modules
+In a post on ZDI, renorobertr shows how to locate and extract the VMkernel (and other modules like user).
+
+
+VMkernel can be found by extracting /bootbank/k.b00 and user* module can be extracted from /bootbank/user.b00.
+*More on what&rsquo;s in user module later
+He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsquo;s key memory addresses, which came in handy for reversing the module list and module structures.">
+<meta name="author" content="">
+<link rel="canonical" href="//localhost:1313/posts/esxi-rootkit-2/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.fc220c15db4aef0318bbf30adc45d33d4d7c88deff3238b23eb255afdc472ca6.css" integrity="sha256-/CIMFdtK7wMYu/MK3EXTPU18iN7/MjiyPrJVr9xHLKY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/esxi-rootkit-2/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="Curiouser and Curiouser! (Alt + H)">Curiouser and Curiouser!</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="//localhost:1313/categories/" title="categories">
+                    <span>categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/tags/" title="tags">
+                    <span>tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      ESXHiDE - ESXi Rootkit Development - Part 2
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta"><span title='2024-09-29 13:16:49 -0500 CDT'>September 29, 2024</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h2 id="extracting-vmkernel--modules">Extracting VMkernel &amp; Modules<a hidden class="anchor" aria-hidden="true" href="#extracting-vmkernel--modules">#</a></h2>
+<p>In a <a href="https://www.zerodayinitiative.com/blog/2023/6/21/cve-2022-31696-an-analysis-of-a-vmware-esxi-tcp-socket-keepalive-type-confusion-lpe">post</a> on ZDI, <a href="https://x.com/renorobertr">renorobertr</a> shows how to locate and extract the VMkernel (and other modules like <code>user</code>).</p>
+<p><img loading="lazy" src="/images/2024-09-30-23-02-56.png" alt=""  />
+</p>
+<p>VMkernel can be found by extracting <code>/bootbank/k.b00</code> and user* module can be extracted from <code>/bootbank/user.b00</code>.</p>
+<p>*More on what&rsquo;s in user module later</p>
+<p>He also demonstrates using a native binary (<code>esxcfg-info -y</code>) to get a module&rsquo;s key memory addresses, which came in handy for reversing the module list and module structures.</p>
+<h2 id="interrupt-descriptor-table--handlers">Interrupt Descriptor Table &amp; Handlers<a hidden class="anchor" aria-hidden="true" href="#interrupt-descriptor-table--handlers">#</a></h2>
+<p>ESXi&rsquo;s VMkernel can handle both Linux syscalls and ESXi-specific syscalls.  This seen when reverse engineering some native user mode binaries.</p>
+<p>Linux syscalls are invoked using <code>int 0x80</code> instruction, which calls the interrupt handler located at that specific index of the interrupt descriptor table (IDT).</p>
+<p>ESXi syscalls are invoked using <code>int 0x90</code> instruction, which calls its own handler at that index of the IDT.</p>
+<p>To build a rootkit, I wanted to hook syscalls at the kernel level to perform whatever actions I want it to, which means digging into VMkernel that was extracted previously to see what is at index 0x80 and index 0x90 of the IDT.  Disassembly from IDA quickly shows that both interrupts have its own handler function.</p>
+<p><img loading="lazy" src="/images/2024-09-30-23-12-05.png" alt=""  />
+</p>
+<p>While the function pointers might be tougher to resolve using only static analysis, the GDB setup from earlier allowed me to set a breakpoint on wait for a syscall to be called and see where the function pointer leads.  The addresses dumped from <code>esxcfg-info -y</code> showed that the function pointer pointed to a function in the <code>user</code> module, specifically <code>User_UWVMK64SyscallHandler()</code></p>
+<p><img loading="lazy" src="/images/2024-09-30-23-22-19.png" alt=""  />
+</p>
+<pre tabindex="0"><code>         |----Name..................................................user
+         |----File Name.............................................user
+         |----File Path.............................................
+         |----Module Id.............................................2 
+         |----ReadOnly Load Address.................................0x0000418025148000 
+         |----ReadOnly Length.......................................1028096 
+</code></pre><p>Taking a peak at <code>User_UWVMK64SyscallHandler()</code> revealed a few interesting named variables.</p>
+<pre tabindex="0"><code>Linux64_SyscallTableLen
+Linux64_SyscallTable
+UW64VMKSyscall_HandlerTableLen
+UW64VMKSyscall_HandlerTable
+UWVMKSyscall_HandlerTableLen
+UWVMKSyscall_HandlerTable
+UW64VMKPrivateSyscall_HandlerTableLen
+UW64VMKPrivateSyscall_HandlerTable
+... and more
+</code></pre><p>If I were a betting man, I&rsquo;d say some of those addresses have the length of the syscall table and the syscall table itself.  And looking that <code>Linux64_SyscallTable</code>, I&rsquo;d say we&rsquo;re right on the mark.</p>
+<p><img loading="lazy" src="/images/2024-09-30-23-28-07.png" alt=""  />
+</p>
+<p>Structure of the table looks something like:</p>
+<pre tabindex="0"><code>typedef struct {
+    void *func;
+    void *unk;
+    char *name;
+} SyscallTable_Entry;
+</code></pre><h2 id="finding-module-addresses">Finding Module Addresses<a hidden class="anchor" aria-hidden="true" href="#finding-module-addresses">#</a></h2>
+<p>Great, I found the Linux syscall table but since ASLR is enabled, I can&rsquo;t guess the addresses of <code>user</code> module.  I noticed that there is a <code>moduleList</code> pointer in the BSS section of VMkernel, that looks like something I can use to find the <code>user</code> module.  To investigate that, I need to find the base address of VMkernel.</p>
+<p>There aren&rsquo;t a whole lot of exported functions I can reach from the kernel module, but <code>vmk_ModuleStackTop()</code> located in VMkernel is one of them and I was able to use some basic math to find the base address of VMkernel.</p>
+<pre tabindex="0"><code>    uint64_t vmk_ModuleStackTop_addr = (uint64_t)vmk_ModuleStackTop;    
+    uint64_t vmkernel_text_addr = vmk_ModuleStackTop_addr - 0x125D54;    
+    uint64_t vmkernel_data_addr = vmkernel_text_addr - 0x40000000;    
+    uint64_t moduleList = vmkernel_data_addr + 0x390100;
+    uint64_t moduleListBegin = vmkernel_data_addr + 0x390100; // Not an exported name, just named by me
+    
+    printk(&#34;vmk_ModuleStackTop_addr = %llX\n&#34;, vmk_ModuleStackTop_addr);
+    printk(&#34;vmkernel_text_addr = %llX\n&#34;, vmkernel_text_addr);
+    printk(&#34;vmkernel_data_addr = %llX\n&#34;, vmkernel_data_addr);
+    printk(&#34;moduleList = %llX\n&#34;, moduleList);
+</code></pre><p><img loading="lazy" src="/images/2024-09-30-23-37-38.png" alt=""  />
+</p>
+<p>Armed with that <code>moduleList</code> address and a little bit of reversing functions that use <code>moduleList</code>, I was able to traverse the structure and come up with a way iterate through it and grab few important addresses.</p>
+<pre tabindex="0"><code>pwndbg&gt; x/82gx 0x417FE4D90958-0x288
+0x417fe4d906d0:	0x0000417fe4d90448	0x0000417fe4d90958 [previous ptr] [next ptr]
+0x417fe4d906e0:	0x0000000000000000	0x0000000000000000
+0x417fe4d906f0:	0x0000000000000000	0x0000000000000000
+0x417fe4d90700:	0x0000000000000000	0x0000000000000000
+0x417fe4d90710:	0x0000000000000000	0x0000000000000000
+0x417fe4d90720:	0x0000000000000000	0x0000000000000000
+0x417fe4d90730:	0x0000000000000000	0x0000000000000000
+0x417fe4d90740:	0x0000000000000000	0x0000000000000000
+0x417fe4d90750:	0x0000000000000000	0x0000000000000000
+0x417fe4d90760:	0x0000000000000000	0x0000000000000000
+0x417fe4d90770:	0x0000000000000000	0x0000000000000000
+0x417fe4d90780:	0x00004300490de990	0x00004300490deb20
+0x417fe4d90790:	0x0000418024e94c84	0x0000000000000000
+0x417fe4d907a0:	0x0000418025148000	0x00000000000fb000 [ReadOnly Load Address] [ReadOnly Length]
+0x417fe4d907b0:	0x0000417fc0400000	0x0000000000212000 [Writable Load Address] [Writable Length]
+0x417fe4d907c0:	0x000041802520e5b8	0x0000000000033d90
+0x417fe4d907d0:	0x00004180251e98f4	0x000000000000008c
+0x417fe4d907e0:	0x00004180251e9664	0x0000000100000290
+0x417fe4d907f0:	0x000041802514c5e0	0x000041802514c814
+0x417fe4d90800:	0x0000000000000000	0x0000000000000000
+0x417fe4d90810:	0x0000000000000000	0x0000000000000000
+0x417fe4d90820:	0x0000000000000000	0x0000000000000000
+0x417fe4d90830:	0x0000000000000000	0x0000000000000000
+0x417fe4d90840:	0x0000000000000000	0x0000000000000000
+0x417fe4d90850:	0x0000418025148000	0x0000417fc0400000 [Text Base Addr] [Data Base Addr]
+0x417fe4d90860:	0x0000417fc0410a80	0x00004300490dddf0 [BSS Base Addr]
+0x417fe4d90870:	0x0000000000000000	0x7265737500000002 [] [module id (02)] [module name]
+0x417fe4d90880:	0x0000000000000000	0x0000000000000000
+0x417fe4d90890:	0x0000000000000000	0x0000000100000000
+0x417fe4d908a0:	0x0000003400000001	0x0000417fe4d908a8
+0x417fe4d908b0:	0x0000417fe4d908a8	0x00004300490deb80
+0x417fe4d908c0:	0x00004300490debc0	0x0000000000000000
+0x417fe4d908d0:	0x0000000000000001	0x0000000001000000
+0x417fe4d908e0:	0x0000000300000000	0x0000000000000004
+0x417fe4d908f0:	0x00004300491d1fb0	0x00004300491fda98
+0x417fe4d90900:	0x00004300491fdbb8	0x0001646700016467
+0x417fe4d90910:	0x0000000000000c7b	0x0000000000000c7b
+0x417fe4d90920:	0x0000418025148000	0x0000417fe4d9087c
+0x417fe4d90930:	0x0000000000000000	0x0000417fe4d90ba8
+0x417fe4d90940:	0x0000417fe4d90698	0x00004300490dddf0
+0x417fe4d90950:	0x0000418024ae3688	0x0000417fe4d906d0
+</code></pre><pre tabindex="0"><code>    uint64_t module = *(uint64_t*)moduleListBegin;
+
+    uint64_t user_mod_addr = 0;
+
+    while (true)
+    {
+        if (module == moduleList)
+            break;
+
+        char *moduleName = (char *)(module - 220);
+        uint64_t textAddr = *(uint64_t*)(module - 264);
+        uint64_t dataAddr = *(uint64_t*)(module - 256);
+        uint64_t bssAddr = *(uint64_t*)(module - 248);
+
+        printk(&#34;module: %s | %llX : (TEXT: %llX | DATA: %llX | BSS: %llX)\n&#34;, moduleName, module, textAddr, dataAddr, bssAddr);
+
+        if (!vmk_Strncmp(moduleName, &#34;user&#34;, 4))
+        {
+            user_mod_addr = textAddr;
+        }
+
+        module = *(uint64_t*)module;
+    }
+</code></pre><p>Doing so allowed me to grab the addresses of all of the loaded modules from my own kernel module.</p>
+<p><img loading="lazy" src="/images/2024-09-30-23-47-05.png" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="//localhost:1313/">Curiouser and Curiouser!</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
