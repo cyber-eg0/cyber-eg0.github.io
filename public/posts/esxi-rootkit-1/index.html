@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>ESXHiDE - ESXi Rootkit Development - Part 1 | Curiouser and Curiouser!</title>
 <meta name="keywords" content="">
 <meta name="description" content="Introduction
 For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant.  I won&rsquo;t be going into all of the differences in this series but for those who are curious, this whitepaper on ESXi architecture is a good starting point.  My mind started to drift away from user mode tools to kernel mode security tools.  The only real resources I was able to find online were those related to things like USB and NIC drivers.  VMkernel is able to run some Linux kernel modules, but not all.  This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls.">
 <meta name="author" content="">
-<link rel="canonical" href="//localhost:1313/posts/esxi-rootkit-1/">
+<link rel="canonical" href="https://cyber-eg0.github.io.git/posts/esxi-rootkit-1/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.fc220c15db4aef0318bbf30adc45d33d4d7c88deff3238b23eb255afdc472ca6.css" integrity="sha256-/CIMFdtK7wMYu/MK3EXTPU18iN7/MjiyPrJVr9xHLKY=" rel="preload stylesheet" as="style">
-<link rel="icon" href="//localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<link rel="icon" href="https://cyber-eg0.github.io.git/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cyber-eg0.github.io.git/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cyber-eg0.github.io.git/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://cyber-eg0.github.io.git/apple-touch-icon.png">
+<link rel="mask-icon" href="https://cyber-eg0.github.io.git/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="//localhost:1313/posts/esxi-rootkit-1/">
+<link rel="alternate" hreflang="en" href="https://cyber-eg0.github.io.git/posts/esxi-rootkit-1/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,7 +56,69 @@ For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After 
         }
 
     </style>
-</noscript>
+</noscript><meta property="og:title" content="ESXHiDE - ESXi Rootkit Development - Part 1" />
+<meta property="og:description" content="Introduction
+For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant.  I won&rsquo;t be going into all of the differences in this series but for those who are curious, this whitepaper on ESXi architecture is a good starting point.  My mind started to drift away from user mode tools to kernel mode security tools.  The only real resources I was able to find online were those related to things like USB and NIC drivers.  VMkernel is able to run some Linux kernel modules, but not all.  This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cyber-eg0.github.io.git/posts/esxi-rootkit-1/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-29T10:19:57-05:00" />
+<meta property="article:modified_time" content="2024-09-29T10:19:57-05:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ESXHiDE - ESXi Rootkit Development - Part 1"/>
+<meta name="twitter:description" content="Introduction
+For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant.  I won&rsquo;t be going into all of the differences in this series but for those who are curious, this whitepaper on ESXi architecture is a good starting point.  My mind started to drift away from user mode tools to kernel mode security tools.  The only real resources I was able to find online were those related to things like USB and NIC drivers.  VMkernel is able to run some Linux kernel modules, but not all.  This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://cyber-eg0.github.io.git/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ESXHiDE - ESXi Rootkit Development - Part 1",
+      "item": "https://cyber-eg0.github.io.git/posts/esxi-rootkit-1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ESXHiDE - ESXi Rootkit Development - Part 1",
+  "name": "ESXHiDE - ESXi Rootkit Development - Part 1",
+  "description": "Introduction For some time now, I\u0026rsquo;ve been told that ESXi VMkernel is NOT Linux. After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant. I won\u0026rsquo;t be going into all of the differences in this series but for those who are curious, this whitepaper on ESXi architecture is a good starting point. My mind started to drift away from user mode tools to kernel mode security tools. The only real resources I was able to find online were those related to things like USB and NIC drivers. VMkernel is able to run some Linux kernel modules, but not all. This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Introduction For some time now, I’ve been told that ESXi VMkernel is NOT Linux. After some research into developing user mode (or user world, as VMware calls it) tools, I finally understood what that meant. I won’t be going into all of the differences in this series but for those who are curious, this whitepaper on ESXi architecture is a good starting point. My mind started to drift away from user mode tools to kernel mode security tools. The only real resources I was able to find online were those related to things like USB and NIC drivers. VMkernel is able to run some Linux kernel modules, but not all. This series will go into my research and methods on creating a proof-of-concept rootkit called ESXHiDE on ESXi VMkernel to intercept system calls.\nExecution Environment Setup My setup is a Windows 11 host machine with VMware Workstation running a Ubuntu 22.04 VM and VMware ESXi 6.7 (Build 14320388) VM.\nWindows 11 VMware Workstation Ubuntu 22.04 ESXi 6.7 Build 14320388 CentOS 7 To enable debugging on the ESXi VM through Workstation, I appended the following to .vmx:\ndebugStub.listen.guest64 = \"TRUE\" If all goes well, vmware.log will show that debugging is enabled and listening on a port.\nvmx Debug stub: VMware Workstation is listening for debug connection on port 8864. vmx Debug stub: (gdb) target remote localhost:8864 For me, this was on port 8864 on my Windows 11 host. However, because I wanted to work on my Ubuntu VM, I used SSH to create tunnel from my Windows host so port 8864 on my VM could reach the debug port.\nssh -R 8864:localhost:8864 @ Once that’s set up, GDB is good to connect and I was ready to get to work.\nDevelopment Environment Setup Although VMware recommends CentOS 5 as one of the build environments, I chose CentOS 7 and hadn’t run into any issues. I opted to use the CentOS repository for the following tools instead of building ESXi’s toolchain:\nGCC 4.8.5 GLIBC 2.17 I also grabbed the VMkernel files to be able to compile a kernel module.\nHowever, I’m also picky about my environment, so I used the Rmeote SSH plugin for VSCode to do my work from my Ubuntu VM.\nVerification To see if my execution environment was properly set up, I attached GDB to the ESXi kernel.\nTo see if my development environment was properly set up, I compiled a simple kernel module to print “Hello World”.\n# vmkload is a native binary on ESXi to load in modules # vmkload -u can be used to unload modules vmkload esxhide # view kernel messages dmesg ... 2024-09-29T16:01:25.235Z cpu1:2103549)Loading module esxhide ... 2024-09-29T16:01:25.236Z cpu1:2103549)module heap vmklnx_esxhide: creation succeeded. id = 0x43049c224000 2024-09-29T16:01:25.236Z cpu1:2103549)\u003c6\u003eHello World from ESXHiDE ... ",
+  "wordCount" : "459",
+  "inLanguage": "en",
+  "datePublished": "2024-09-29T10:19:57-05:00",
+  "dateModified": "2024-09-29T10:19:57-05:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://cyber-eg0.github.io.git/posts/esxi-rootkit-1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Curiouser and Curiouser!",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://cyber-eg0.github.io.git/favicon.ico"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -74,7 +136,7 @@ For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After 
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="//localhost:1313/" accesskey="h" title="Curiouser and Curiouser! (Alt + H)">Curiouser and Curiouser!</a>
+            <a href="https://cyber-eg0.github.io.git/" accesskey="h" title="Curiouser and Curiouser! (Alt + H)">Curiouser and Curiouser!</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -100,12 +162,12 @@ For some time now, I&rsquo;ve been told that ESXi VMkernel is NOT Linux.  After 
         </div>
         <ul id="menu">
             <li>
-                <a href="//localhost:1313/categories/" title="categories">
+                <a href="https://cyber-eg0.github.io.git/categories/" title="categories">
                     <span>categories</span>
                 </a>
             </li>
             <li>
-                <a href="//localhost:1313/tags/" title="tags">
+                <a href="https://cyber-eg0.github.io.git/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
@@ -181,7 +243,7 @@ dmesg
     </main>
     
 <footer class="footer">
-        <span>&copy; 2024 <a href="//localhost:1313/">Curiouser and Curiouser!</a></span> · 
+        <span>&copy; 2024 <a href="https://cyber-eg0.github.io.git/">Curiouser and Curiouser!</a></span> · 
 
     <span>
         Powered by

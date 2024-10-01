@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>ESXHiDE - ESXi Rootkit Development - Part 2 | Curiouser and Curiouser!</title>
 <meta name="keywords" content="">
 <meta name="description" content="Extracting VMkernel &amp; Modules
@@ -15,16 +15,16 @@ VMkernel can be found by extracting /bootbank/k.b00 and user* module can be extr
 *More on what&rsquo;s in user module later
 He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsquo;s key memory addresses, which came in handy for reversing the module list and module structures.">
 <meta name="author" content="">
-<link rel="canonical" href="//localhost:1313/posts/esxi-rootkit-2/">
+<link rel="canonical" href="https://cyber-eg0.github.io.git/posts/esxi-rootkit-2/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.fc220c15db4aef0318bbf30adc45d33d4d7c88deff3238b23eb255afdc472ca6.css" integrity="sha256-/CIMFdtK7wMYu/MK3EXTPU18iN7/MjiyPrJVr9xHLKY=" rel="preload stylesheet" as="style">
-<link rel="icon" href="//localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<link rel="icon" href="https://cyber-eg0.github.io.git/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cyber-eg0.github.io.git/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cyber-eg0.github.io.git/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://cyber-eg0.github.io.git/apple-touch-icon.png">
+<link rel="mask-icon" href="https://cyber-eg0.github.io.git/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="//localhost:1313/posts/esxi-rootkit-2/">
+<link rel="alternate" hreflang="en" href="https://cyber-eg0.github.io.git/posts/esxi-rootkit-2/">
 <noscript>
     <style>
         #theme-toggle,
@@ -61,7 +61,79 @@ He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsqu
         }
 
     </style>
-</noscript>
+</noscript><meta property="og:title" content="ESXHiDE - ESXi Rootkit Development - Part 2" />
+<meta property="og:description" content="Extracting VMkernel &amp; Modules
+In a post on ZDI, renorobertr shows how to locate and extract the VMkernel (and other modules like user).
+
+
+VMkernel can be found by extracting /bootbank/k.b00 and user* module can be extracted from /bootbank/user.b00.
+*More on what&rsquo;s in user module later
+He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsquo;s key memory addresses, which came in handy for reversing the module list and module structures." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cyber-eg0.github.io.git/posts/esxi-rootkit-2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-29T13:16:49-05:00" />
+<meta property="article:modified_time" content="2024-09-29T13:16:49-05:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ESXHiDE - ESXi Rootkit Development - Part 2"/>
+<meta name="twitter:description" content="Extracting VMkernel &amp; Modules
+In a post on ZDI, renorobertr shows how to locate and extract the VMkernel (and other modules like user).
+
+
+VMkernel can be found by extracting /bootbank/k.b00 and user* module can be extracted from /bootbank/user.b00.
+*More on what&rsquo;s in user module later
+He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsquo;s key memory addresses, which came in handy for reversing the module list and module structures."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://cyber-eg0.github.io.git/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ESXHiDE - ESXi Rootkit Development - Part 2",
+      "item": "https://cyber-eg0.github.io.git/posts/esxi-rootkit-2/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ESXHiDE - ESXi Rootkit Development - Part 2",
+  "name": "ESXHiDE - ESXi Rootkit Development - Part 2",
+  "description": "Extracting VMkernel \u0026amp; Modules In a post on ZDI, renorobertr shows how to locate and extract the VMkernel (and other modules like user).\nVMkernel can be found by extracting /bootbank/k.b00 and user* module can be extracted from /bootbank/user.b00.\n*More on what\u0026rsquo;s in user module later\nHe also demonstrates using a native binary (esxcfg-info -y) to get a module\u0026rsquo;s key memory addresses, which came in handy for reversing the module list and module structures.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Extracting VMkernel \u0026 Modules In a post on ZDI, renorobertr shows how to locate and extract the VMkernel (and other modules like user).\nVMkernel can be found by extracting /bootbank/k.b00 and user* module can be extracted from /bootbank/user.b00.\n*More on what’s in user module later\nHe also demonstrates using a native binary (esxcfg-info -y) to get a module’s key memory addresses, which came in handy for reversing the module list and module structures.\nInterrupt Descriptor Table \u0026 Handlers ESXi’s VMkernel can handle both Linux syscalls and ESXi-specific syscalls. This seen when reverse engineering some native user mode binaries.\nLinux syscalls are invoked using int 0x80 instruction, which calls the interrupt handler located at that specific index of the interrupt descriptor table (IDT).\nESXi syscalls are invoked using int 0x90 instruction, which calls its own handler at that index of the IDT.\nTo build a rootkit, I wanted to hook syscalls at the kernel level to perform whatever actions I want it to, which means digging into VMkernel that was extracted previously to see what is at index 0x80 and index 0x90 of the IDT. Disassembly from IDA quickly shows that both interrupts have its own handler function.\nWhile the function pointers might be tougher to resolve using only static analysis, the GDB setup from earlier allowed me to set a breakpoint on wait for a syscall to be called and see where the function pointer leads. The addresses dumped from esxcfg-info -y showed that the function pointer pointed to a function in the user module, specifically User_UWVMK64SyscallHandler()\n|----Name..................................................user |----File Name.............................................user |----File Path............................................. |----Module Id.............................................2 |----ReadOnly Load Address.................................0x0000418025148000 |----ReadOnly Length.......................................1028096 Taking a peak at User_UWVMK64SyscallHandler() revealed a few interesting named variables.\nLinux64_SyscallTableLen Linux64_SyscallTable UW64VMKSyscall_HandlerTableLen UW64VMKSyscall_HandlerTable UWVMKSyscall_HandlerTableLen UWVMKSyscall_HandlerTable UW64VMKPrivateSyscall_HandlerTableLen UW64VMKPrivateSyscall_HandlerTable ... and more If I were a betting man, I’d say some of those addresses have the length of the syscall table and the syscall table itself. And looking that Linux64_SyscallTable, I’d say we’re right on the mark.\nStructure of the table looks something like:\ntypedef struct { void *func; void *unk; char *name; } SyscallTable_Entry; Finding Module Addresses Great, I found the Linux syscall table but since ASLR is enabled, I can’t guess the addresses of user module. I noticed that there is a moduleList pointer in the BSS section of VMkernel, that looks like something I can use to find the user module. To investigate that, I need to find the base address of VMkernel.\nThere aren’t a whole lot of exported functions I can reach from the kernel module, but vmk_ModuleStackTop() located in VMkernel is one of them and I was able to use some basic math to find the base address of VMkernel.\nuint64_t vmk_ModuleStackTop_addr = (uint64_t)vmk_ModuleStackTop; uint64_t vmkernel_text_addr = vmk_ModuleStackTop_addr - 0x125D54; uint64_t vmkernel_data_addr = vmkernel_text_addr - 0x40000000; uint64_t moduleList = vmkernel_data_addr + 0x390100; uint64_t moduleListBegin = vmkernel_data_addr + 0x390100; // Not an exported name, just named by me printk(\"vmk_ModuleStackTop_addr = %llX\\n\", vmk_ModuleStackTop_addr); printk(\"vmkernel_text_addr = %llX\\n\", vmkernel_text_addr); printk(\"vmkernel_data_addr = %llX\\n\", vmkernel_data_addr); printk(\"moduleList = %llX\\n\", moduleList); Armed with that moduleList address and a little bit of reversing functions that use moduleList, I was able to traverse the structure and come up with a way iterate through it and grab few important addresses.\npwndbg\u003e x/82gx 0x417FE4D90958-0x288 0x417fe4d906d0:\t0x0000417fe4d90448\t0x0000417fe4d90958 [previous ptr] [next ptr] 0x417fe4d906e0:\t0x0000000000000000\t0x0000000000000000 0x417fe4d906f0:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90700:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90710:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90720:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90730:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90740:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90750:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90760:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90770:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90780:\t0x00004300490de990\t0x00004300490deb20 0x417fe4d90790:\t0x0000418024e94c84\t0x0000000000000000 0x417fe4d907a0:\t0x0000418025148000\t0x00000000000fb000 [ReadOnly Load Address] [ReadOnly Length] 0x417fe4d907b0:\t0x0000417fc0400000\t0x0000000000212000 [Writable Load Address] [Writable Length] 0x417fe4d907c0:\t0x000041802520e5b8\t0x0000000000033d90 0x417fe4d907d0:\t0x00004180251e98f4\t0x000000000000008c 0x417fe4d907e0:\t0x00004180251e9664\t0x0000000100000290 0x417fe4d907f0:\t0x000041802514c5e0\t0x000041802514c814 0x417fe4d90800:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90810:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90820:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90830:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90840:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90850:\t0x0000418025148000\t0x0000417fc0400000 [Text Base Addr] [Data Base Addr] 0x417fe4d90860:\t0x0000417fc0410a80\t0x00004300490dddf0 [BSS Base Addr] 0x417fe4d90870:\t0x0000000000000000\t0x7265737500000002 [] [module id (02)] [module name] 0x417fe4d90880:\t0x0000000000000000\t0x0000000000000000 0x417fe4d90890:\t0x0000000000000000\t0x0000000100000000 0x417fe4d908a0:\t0x0000003400000001\t0x0000417fe4d908a8 0x417fe4d908b0:\t0x0000417fe4d908a8\t0x00004300490deb80 0x417fe4d908c0:\t0x00004300490debc0\t0x0000000000000000 0x417fe4d908d0:\t0x0000000000000001\t0x0000000001000000 0x417fe4d908e0:\t0x0000000300000000\t0x0000000000000004 0x417fe4d908f0:\t0x00004300491d1fb0\t0x00004300491fda98 0x417fe4d90900:\t0x00004300491fdbb8\t0x0001646700016467 0x417fe4d90910:\t0x0000000000000c7b\t0x0000000000000c7b 0x417fe4d90920:\t0x0000418025148000\t0x0000417fe4d9087c 0x417fe4d90930:\t0x0000000000000000\t0x0000417fe4d90ba8 0x417fe4d90940:\t0x0000417fe4d90698\t0x00004300490dddf0 0x417fe4d90950:\t0x0000418024ae3688\t0x0000417fe4d906d0 uint64_t module = *(uint64_t*)moduleListBegin; uint64_t user_mod_addr = 0; while (true) { if (module == moduleList) break; char *moduleName = (char *)(module - 220); uint64_t textAddr = *(uint64_t*)(module - 264); uint64_t dataAddr = *(uint64_t*)(module - 256); uint64_t bssAddr = *(uint64_t*)(module - 248); printk(\"module: %s | %llX : (TEXT: %llX | DATA: %llX | BSS: %llX)\\n\", moduleName, module, textAddr, dataAddr, bssAddr); if (!vmk_Strncmp(moduleName, \"user\", 4)) { user_mod_addr = textAddr; } module = *(uint64_t*)module; } Doing so allowed me to grab the addresses of all of the loaded modules from my own kernel module.\n",
+  "wordCount" : "780",
+  "inLanguage": "en",
+  "datePublished": "2024-09-29T13:16:49-05:00",
+  "dateModified": "2024-09-29T13:16:49-05:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://cyber-eg0.github.io.git/posts/esxi-rootkit-2/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Curiouser and Curiouser!",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://cyber-eg0.github.io.git/favicon.ico"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -79,7 +151,7 @@ He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsqu
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="//localhost:1313/" accesskey="h" title="Curiouser and Curiouser! (Alt + H)">Curiouser and Curiouser!</a>
+            <a href="https://cyber-eg0.github.io.git/" accesskey="h" title="Curiouser and Curiouser! (Alt + H)">Curiouser and Curiouser!</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -105,12 +177,12 @@ He also demonstrates using a native binary (esxcfg-info -y) to get a module&rsqu
         </div>
         <ul id="menu">
             <li>
-                <a href="//localhost:1313/categories/" title="categories">
+                <a href="https://cyber-eg0.github.io.git/categories/" title="categories">
                     <span>categories</span>
                 </a>
             </li>
             <li>
-                <a href="//localhost:1313/tags/" title="tags">
+                <a href="https://cyber-eg0.github.io.git/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
@@ -273,7 +345,7 @@ UW64VMKPrivateSyscall_HandlerTable
     </main>
     
 <footer class="footer">
-        <span>&copy; 2024 <a href="//localhost:1313/">Curiouser and Curiouser!</a></span> · 
+        <span>&copy; 2024 <a href="https://cyber-eg0.github.io.git/">Curiouser and Curiouser!</a></span> · 
 
     <span>
         Powered by
